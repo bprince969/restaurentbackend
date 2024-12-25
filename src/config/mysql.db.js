@@ -3,8 +3,9 @@ const { CONFIG } = require("./index")
 const mySqlPromise = require("mysql2/promise");
 
 const pool = 
-mySqlPromise.createPool(`${CONFIG.DATABASE_URL}?ssl={"rejectUnauthorized":false}&multipleStatements=true&dateStrings=true&waitForConnections=true&connectionLimit=99&enableKeepAlive=true&keepAliveInitialDelay=10000`);
-
+mySqlPromisemysql.createPool(
+    `${CONFIG.DATABASE_URL}?multipleStatements=true&dateStrings=true&waitForConnections=true&connectionLimit=99&enableKeepAlive=true&keepAliveInitialDelay=10000`
+);
 console.log(`DB Pool Created.`);
 
 exports.getMySqlPromiseConnection = async () => {
