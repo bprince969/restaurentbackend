@@ -10,7 +10,10 @@ const PORT = process.env.PORT || 3000;
 const httpServer = createServer(app);
 
 // Create WebSocket server
-const wss = new WebSocket.Server({ server: httpServer });
+const wss = new WebSocket.Server({
+    server: httpServer,
+    path: "/socket.io/",  // Set the correct endpoint for WebSocket communication
+});
 
 // Map to store tenant-specific connections
 const tenantRooms = new Map();
