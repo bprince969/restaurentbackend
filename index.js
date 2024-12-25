@@ -24,6 +24,7 @@ wss.on("connection", (ws, req) => {
 
             switch (event) {
                 case "authenticate":
+                    // Add the client to the tenant's room (if not already added)
                     if (!tenantRooms.has(tenantId)) {
                         tenantRooms.set(tenantId, new Set());
                     }
@@ -32,6 +33,7 @@ wss.on("connection", (ws, req) => {
                     break;
 
                 case "new_order_backend":
+                    // Broadcast the new order to all clients in the tenant's room
                     if (tenantRooms.has(tenantId)) {
                         tenantRooms.get(tenantId).forEach((client) => {
                             if (client !== ws && client.readyState === WebSocket.OPEN) {
@@ -44,6 +46,7 @@ wss.on("connection", (ws, req) => {
                 case "new_qrorder_backend":
                     try {
                         const resolvedTenantId = await getTenantIdFromQRCode(qrcode);
+                        // Broadcast the QR code order to the corresponding tenant's room
                         if (tenantRooms.has(resolvedTenantId)) {
                             tenantRooms.get(resolvedTenantId).forEach((client) => {
                                 if (client.readyState === WebSocket.OPEN) {
@@ -57,6 +60,7 @@ wss.on("connection", (ws, req) => {
                     break;
 
                 case "order_update_backend":
+                    // Broadcast order updates to all clients in the tenant's room
                     if (tenantRooms.has(tenantId)) {
                         tenantRooms.get(tenantId).forEach((client) => {
                             if (client !== ws && client.readyState === WebSocket.OPEN) {
@@ -76,6 +80,7 @@ wss.on("connection", (ws, req) => {
 
     ws.on("close", () => {
         console.log("Client disconnected");
+        // Clean up the tenantRooms map
         tenantRooms.forEach((clients, tenantId) => {
             clients.delete(ws);
             if (clients.size === 0) {
@@ -85,6 +90,7 @@ wss.on("connection", (ws, req) => {
     });
 });
 
+// Start HTTP server with WebSocket support
 httpServer.listen(PORT, () => {
     console.log(`Server started on PORT: ${PORT}`);
 });
